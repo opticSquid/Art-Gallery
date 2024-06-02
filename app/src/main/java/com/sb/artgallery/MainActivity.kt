@@ -28,7 +28,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -44,17 +43,6 @@ import com.sb.artgallery.entity.Art
 import com.sb.artgallery.ui.theme.ArtGalleryTheme
 
 class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            ParentWindow()
-        }
-    }
-}
-
-@Composable
-fun ParentWindow(modifier: Modifier = Modifier) {
     val arts: List<Art> = listOf(
         Art(
             image = R.drawable.afonso_vieira_ha9pftjs5em_unsplash,
@@ -82,6 +70,18 @@ fun ParentWindow(modifier: Modifier = Modifier) {
             description = """The photo captures a picturesque scene of a park overflowing with cherry blossoms.  Large, fluffy clusters of pink flowers drape the branches of the trees, creating a canopy overhead.  Several people stand beneath the blossoms, enjoying the springtime beauty. Some people are gazing upwards, likely marveling at the flowers, while others chat amongst themselves. The overall feel of the image is peaceful and serene."""
         )
     )
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContent {
+            ParentWindow(artList = arts)
+        }
+    }
+}
+
+@Composable
+fun ParentWindow(artList: List<Art>, modifier: Modifier = Modifier) {
     var currentPos by remember { mutableIntStateOf(0) }
     ArtGalleryTheme {
         Surface(
@@ -166,5 +166,17 @@ fun NavButtons(modifier: Modifier = Modifier) {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun GreetingPreview() {
-    ParentWindow()
+    ParentWindow(
+        artList = listOf(
+            Art(
+                image = R.drawable.afonso_vieira_ha9pftjs5em_unsplash,
+                title = "Parenting",
+                description = """This image shows an adult possibly a male standing behind a his child probably helping the child walk. They are on a sandy beach in front of the sea"""
+            ), Art(
+                image = R.drawable.alwen_kqlimsmgxsw_unsplash,
+                title = "Paparazzi",
+                description = """The image consists of pink text that says “20 ANOS 71” stacked on top of a black and white image of a woman holding a camera. The camera has a pink flash attached to it.  The woman is facing away from the camera and has short dark hair. She’s wearing a black collared shirt with a pocket on one side and dark pants or jeans. The camera is black and appears to be a 35mm film camera. It has a large lens in the front and a viewfinder on the top. There is a strap attached to the camera that goes around the woman's neck. Attached to the top of the camera is a rectangular flash unit that appears to be made of pink plastic. I can’t tell what kind of camera it is or what brand it is.  There is no other writing or imagery visible."""
+            )
+        )
+    )
 }
