@@ -26,6 +26,11 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -39,6 +44,17 @@ import com.sb.artgallery.entity.Art
 import com.sb.artgallery.ui.theme.ArtGalleryTheme
 
 class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContent {
+            ParentWindow()
+        }
+    }
+}
+
+@Composable
+fun ParentWindow(modifier: Modifier = Modifier) {
     val arts: List<Art> = listOf(
         Art(
             image = R.drawable.afonso_vieira_ha9pftjs5em_unsplash,
@@ -66,38 +82,32 @@ class MainActivity : ComponentActivity() {
             description = """The photo captures a picturesque scene of a park overflowing with cherry blossoms.  Large, fluffy clusters of pink flowers drape the branches of the trees, creating a canopy overhead.  Several people stand beneath the blossoms, enjoying the springtime beauty. Some people are gazing upwards, likely marveling at the flowers, while others chat amongst themselves. The overall feel of the image is peaceful and serene."""
         )
     )
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            ArtGalleryTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .statusBarsPadding()
-                            .padding(horizontal = 25.dp)
-                            .safeDrawingPadding()
-                            .verticalScroll(rememberScrollState()),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Top
-                    ) {
-                        ImageFrame(
-                            image = R.drawable.dmitry_spravko_uugcia_ztmw_unsplash,
-                            title = "Gallado",
-                            modifier = Modifier.padding(10.dp)
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        DescriptionCard(title = "Gallado", description = "test")
-                        Spacer(modifier = Modifier.height(16.dp))
-                        NavButtons()
-                    }
-                }
-
+    var currentPos by remember { mutableIntStateOf(0) }
+    ArtGalleryTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Column(
+                modifier = Modifier
+                    .statusBarsPadding()
+                    .padding(horizontal = 25.dp)
+                    .safeDrawingPadding()
+                    .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top
+            ) {
+                ImageFrame(
+                    image = R.drawable.dmitry_spravko_uugcia_ztmw_unsplash,
+                    title = "Gallado",
+                    modifier = Modifier.padding(10.dp)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                DescriptionCard(title = "Gallado", description = "test")
+                Spacer(modifier = Modifier.height(16.dp))
+                NavButtons()
             }
         }
+
     }
 }
 
@@ -156,28 +166,5 @@ fun NavButtons(modifier: Modifier = Modifier) {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun GreetingPreview() {
-    ArtGalleryTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            Column(
-                modifier = Modifier
-                    .statusBarsPadding()
-                    .padding(horizontal = 25.dp)
-                    .safeDrawingPadding()
-                    .verticalScroll(rememberScrollState()),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Top
-            ) {
-                ImageFrame(
-                    image = R.drawable.dmitry_spravko_uugcia_ztmw_unsplash,
-                    title = "Gallado",
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                DescriptionCard(title = "Gallado", description = "test")
-                Spacer(modifier = Modifier.height(16.dp))
-                NavButtons()
-            }
-        }
-    }
+    ParentWindow()
 }
