@@ -1,6 +1,7 @@
 package com.sb.artgallery
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -43,7 +44,7 @@ import com.sb.artgallery.entity.Art
 import com.sb.artgallery.ui.theme.ArtGalleryTheme
 
 class MainActivity : ComponentActivity() {
-    val arts: List<Art> = listOf(
+    private val arts: List<Art> = listOf(
         Art(
             image = R.drawable.afonso_vieira_ha9pftjs5em_unsplash,
             title = "Parenting",
@@ -82,7 +83,11 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun ParentWindow(artList: List<Art>, modifier: Modifier = Modifier) {
+    val listSize = artList.size
     var currentPos by remember { mutableIntStateOf(0) }
+    Log.d("ArtGallery","List Size: $listSize")
+    Log.d("ArtGallery", "Initial currentPos: $currentPos")
+    val art = artList[currentPos]
     ArtGalleryTheme {
         Surface(
             modifier = Modifier.fillMaxSize()
@@ -97,14 +102,19 @@ fun ParentWindow(artList: List<Art>, modifier: Modifier = Modifier) {
                 verticalArrangement = Arrangement.Top
             ) {
                 ImageFrame(
-                    image = R.drawable.dmitry_spravko_uugcia_ztmw_unsplash,
-                    title = "Gallado",
-                    modifier = Modifier.padding(10.dp)
+                    image = art.image, title = art.title, modifier = Modifier.padding(10.dp)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                DescriptionCard(title = "Gallado", description = "test")
+                DescriptionCard(title = art.title, description = art.description)
                 Spacer(modifier = Modifier.height(16.dp))
-                NavButtons()
+                NavButtons(prevCallback = {
+                    if (currentPos-1 < 0) currentPos = 0 else currentPos -= 1
+                    Log.d("ArtGallery", "currentPos: $currentPos")
+                }, nextCallback = {
+                    currentPos+=1
+                    if (currentPos >= listSize) currentPos = 0
+                    Log.d("ArtGallery", "currentPos: $currentPos")
+                })
             }
         }
 
@@ -131,7 +141,7 @@ fun ImageFrame(
 }
 
 @Composable
-fun DescriptionCard(title: String, description: String, modifier: Modifier = Modifier) {
+fun DescriptionCard(title: String, description: String?, modifier: Modifier = Modifier) {
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -144,20 +154,28 @@ fun DescriptionCard(title: String, description: String, modifier: Modifier = Mod
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
         )
         Text(
-            text = description,
+            text = description ?: "No description provided",
             textAlign = TextAlign.Left,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+            modifier = Modifier
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .verticalScroll(
+                    rememberScrollState()
+                )
         )
     }
 }
 
 @Composable
-fun NavButtons(modifier: Modifier = Modifier) {
+fun NavButtons(
+    prevCallback: () -> Unit,
+    nextCallback: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-        Button(onClick = { /*TODO*/ }) {
+        Button(onClick = prevCallback ) {
             Text(text = "Previous")
         }
-        Button(onClick = { /*TODO*/ }) {
+        Button(onClick = nextCallback) {
             Text(text = "Next")
         }
     }
@@ -172,10 +190,6 @@ fun GreetingPreview() {
                 image = R.drawable.afonso_vieira_ha9pftjs5em_unsplash,
                 title = "Parenting",
                 description = """This image shows an adult possibly a male standing behind a his child probably helping the child walk. They are on a sandy beach in front of the sea"""
-            ), Art(
-                image = R.drawable.alwen_kqlimsmgxsw_unsplash,
-                title = "Paparazzi",
-                description = """The image consists of pink text that says “20 ANOS 71” stacked on top of a black and white image of a woman holding a camera. The camera has a pink flash attached to it.  The woman is facing away from the camera and has short dark hair. She’s wearing a black collared shirt with a pocket on one side and dark pants or jeans. The camera is black and appears to be a 35mm film camera. It has a large lens in the front and a viewfinder on the top. There is a strap attached to the camera that goes around the woman's neck. Attached to the top of the camera is a rectangular flash unit that appears to be made of pink plastic. I can’t tell what kind of camera it is or what brand it is.  There is no other writing or imagery visible."""
             )
         )
     )
